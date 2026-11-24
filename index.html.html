@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>دفتر ذكرياتنا 🎞️🤎</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Aref+Ruqaa:wght@400;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper-bg: #f6eedc;
+      --paper-light: #fcf8ef;
+      --kraft: #d7be96;
+      --ink-brown: #3e2723;
+      --ink-soft: #6d4c41;
+      --wax-red: #942929;
+      --tape-gold: rgba(218, 178, 122, 0.65);
+      --tape-sage: rgba(122, 134, 108, 0.52);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Cairo', sans-serif;
+      color: var(--ink-brown);
+      background-color: var(--paper-bg);
+      background-image:
+        radial-gradient(rgba(109, 76, 65, 0.08) 1px, transparent 0),
+        linear-gradient(to bottom, rgba(224, 202, 166, 0.32), rgba(252, 248, 239, 0.7));
+      background-size: 22px 22px, 100% 100%;
+      overflow-x: hidden;
+      line-height: 1.75;
+    }
+
+    body.locked {
+      overflow: hidden;
+    }
+
+    /* شريط تنقل علوي بطابع ورقي */
+    .notebook-tabs {
+      position: fixed;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1400;
+      display: flex;
+      gap: 0.35rem;
+      padding: 0.4rem 0.65rem;
+      background: rgba(252, 248, 239, 0.92);
+      backdrop-filter: blur(10px);
+      border: 1.5px dashed #b09575;
+      border-radius: 50px;
+      box-shadow: 0 8px 24px rgba(62, 39, 35, 0.14);
+      max-width: 94vw;
+      overflow-x: auto;
+    }
+
+    .notebook-tabs a {
+      color: var(--ink-soft);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 0.32rem 0.75rem;
+      border-radius: 50px;
+      white-space: nowrap;
+      transition: all 0.25s ease;
+    }
+
+    .notebook-tabs a:hover {
+      background: #eadbc0;
+      color: var(--ink-brown);
+    }
+
+    /* زر الأغنية العائم */
+    .music-pill {
+      position: fixed;
+      bottom: 18px;
+      left: 18px;
+      z-index: 1500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #fcf8ef;
+      color: var(--ink-brown);
+      border: 1.5px dashed #9e8267;
+      border-radius: 50px;
+      padding: 0.6rem 1.15rem;
+      font-family: 'Cairo', sans-serif;
+      font-size: 0.86rem;
+      font-weight: 700;
+      box-shadow: 0 8px 22px rgba(62, 39, 35, 0.18);
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .music-pill:hover {
+      transform: translateY(-2px);
+      background: #f3e6cb;
+    }
+
+    .music-pill.playing {
+      border-style: solid;
+      border-color: var(--wax-red);
+      color: var(--wax-red);
+    }
+
+    .music-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #9e8267;
+    }
+
+    .music-pill.playing .music-dot {
+      background: var(--wax-red);
+      animation: pulseMusic 1.2s infinite;
+    }
+
+    @keyframes pulseMusic {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.35); opacity: 0.65; }
+    }
+
+    /* شاشة القفل على شكل ظرف بريد قديم */
+    .lock-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      background-color: #ebe0c8;
+      background-image: radial-gradient(rgba(62, 39, 35, 0.09) 1px, transparent 0);
+      background-size: 18px 18px;
+      transition: opacity 0.65s ease, visibility 0.65s ease;
+    }
+
+    .lock-screen.unlocked {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .envelope-lock {
+      position: relative;
+      width: 100%;
+      max-width: 440px;
+      background: var(--paper-light);
+      border: 2px solid #c9b18a;
+      border-radius: 14px;
+      padding: 2.7rem 1.8rem 2.2rem;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(62, 39, 35, 0.2);
+      animation: paperDrop 0.75s ease-out;
+    }
+
+    @keyframes paperDrop {
+      from { opacity: 0; transform: translateY(-20px) rotate(-1.5deg); }
+      to { opacity: 1; transform: translateY(0) rotate(0deg); }
+    }
+
+    .washi-tape {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%) rotate(-2deg);
+      min-width: 145px;
+      padding: 0 12px;
+      height: 28px;
+      background: var(--tape-gold);
+      border-left: 2px dashed rgba(255, 255, 255, 0.5);
+      border-right: 2px dashed rgba(255, 255, 255, 0.5);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--ink-brown);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+    }
+
+    .wax-seal {
+      width: 70px;
+      height: 70px;
+      margin: 0 auto 1rem;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #b83b3b, var(--wax-red));
+      color: #f7e6c4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Aref Ruqaa', serif;
+      font-size: 1.6rem;
+      box-shadow: 0 6px 15px rgba(148, 41, 41, 0.35), inset 0 0 8px rgba(0, 0, 0, 0.25);
+      border: 3px double rgba(247, 230, 196, 0.5);
+    }
+
+    .envelope-lock h2 {
+      font-family: 'Aref Ruqaa', serif;
+      font-size: 2rem;
+      color: var(--ink-brown);
+      margin-bottom: 0.4rem;
+    }
+
+    .lock-hint {
+      font-size: 0.94rem;
+      color: var(--ink-soft);
+      margin-bottom: 1.4rem;
+    }
+
+    .password-input {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      border-radius: 8px;
+      border: 1.5px dashed #a1887f;
+      background: #fffdf8;
+      font-family: 'Cairo', sans-serif;
+      font-size: 1.12rem;
+      text-align: center;
+      color: var(--ink-brown);
+      outline: none;
+      margin-bottom: 0.85rem;
+      direction: ltr;
+      letter-spacing: 1.5px;
+      transition: border-color 0.25s ease;
+    }
+
+    .password-input:focus {
+      border-style: solid;
+      border-color: var(--wax-red);
+    }
+
+    .error-msg {
+      min-height: 1.4rem;
+      font-size: 0.88rem;
+      color: var(--wax-red);
+      font-weight: 700;
+      margin-bottom: 0.8rem;
+    }
+
+    .shake {
+      animation: shakeAnim 0.35s ease;
+    }
+
+    @keyframes shakeAnim {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(7px); }
+      50% { transform: translateX(-7px); }
+      75% { transform: translateX(5px); }
+    }
+
+    /* الأزرار بطابع يدوي */
+    .btn-handmade {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: var(--wax-red);
+      color: #fcf8ef;
+      text-decoration: none;
+      padding: 0.85rem 1.9rem;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.98rem;
+      border: 1.5px dashed rgba(252, 248, 239, 0.55);
+      box-shadow: 0 6px 18px rgba(62, 39, 35, 0.2);
+      cursor: pointer;
+      transition: transform 0.25s ease, background 0.25s ease;
+    }
+
+    .btn-handmade:hover {
+      transform: translateY(-3px) rotate(-0.5deg);
+      background: #781d1d;
+    }
+
+    .btn-paper-outline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      background: #f2e5cb;
+      color: var(--ink-brown);
+      padding: 0.82rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      border: 1.5px dashed #8d6e63;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .btn-paper-outline:hover {
+      background: #e7d5b3;
+      transform: translateY(-2px);
+    }
+
+    /* عناصر زينة ورقية وقلوب عائمة */
+    .floating-scraps {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .scrap-item {
+      position: absolute;
+      bottom: -25px;
+      animation: floatPaper linear infinite;
+      user-select: none;
+    }
+
+    @keyframes floatPaper {
+      0% { transform: translateY(0) rotate(-10deg); opacity: 0; }
+      15% { opacity: 0.75; }
+      85% { opacity: 0.75; }
+      100% { transform: translateY(-108vh) rotate(25deg); opacity: 0; }
+    }
+
+    /* 1. غلاف الدفتر */
+    header.hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 5.5rem 1.5rem 3rem;
+      z-index: 2;
+    }
+
+    .scrapbook-cover {
+      position: relative;
+      max-width: 800px;
+      width: 100%;
+      background: var(--paper-light);
+      border: 2px solid #cbb389;
+      border-radius: 16px;
+      padding: 3rem 2rem;
+      box-shadow:
+        10px 10px 0px #d6c098,
+        0 22px 50px rgba(62, 39, 35, 0.16);
+      animation: paperDrop 0.9s ease-out;
+    }
+
+    .postage-stamp {
+      position: absolute;
+      top: 18px;
+      left: 20px;
+      background: #efe2c6;
+      border: 2px dotted #8d6e63;
+      padding: 0.4rem 0.75rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--ink-soft);
+      transform: rotate(-5deg);
+    }
+
+    .badge {
+      display: inline-block;
+      background: #eee1c5;
+      color: var(--ink-brown);
+      padding: 0.35rem 1.2rem;
+      border-radius: 6px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      margin-bottom: 1.4rem;
+      border: 1px dashed #9e8267;
+    }
+
+    .taped-photo {
+      position: relative;
+      width: 230px;
+      margin: 0 auto 1.7rem;
+      background: #fffdf9;
+      padding: 10px 10px 26px;
+      box-shadow: 0 10px 25px rgba(62, 39, 35, 0.18);
+      transform: rotate(-2deg);
+      transition: transform 0.35s ease;
+    }
+
+    .taped-photo:hover {
+      transform: rotate(0deg) scale(1.03);
+    }
+
+    .taped-photo::before {
+      content: "";
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%) rotate(2deg);
+      width: 95px;
+      height: 24px;
+      background: var(--tape-sage);
+    }
+
+    .taped-photo img {
+      width: 100%;
+      height: 210px;
+      object-fit: cover;
+      display: block;
+      filter: sepia(10%) contrast(102%);
+    }
+
+    .hero h1 {
+      font-family: 'Aref Ruqaa', serif;
+      font-size: clamp(2rem, 4.5vw, 3.1rem);
+      color: var(--ink-brown);
+      margin-bottom: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .hero p.quote {
+      font-family: 'Amiri', serif;
+      font-size: 1.32rem;
+      color: var(--ink-soft);
+      max-width: 590px;
+      margin: 0 auto 1.9rem;
+    }
+
+    .hero-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+      justify-content: center;
+    }
+
+    /* الأقسام */
+    section {
+      position: relative;
+      z-index: 2;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 4.5rem 1.5rem;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: all 0.75s ease-out;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .section-header h2 {
+      font-family: 'Aref Ruqaa', serif;
+      font-size: clamp(1.9rem, 3.5vw, 2.7rem);
+      color: var(--ink-brown);
+      margin-bottom: 0.4rem;
+    }
+
+    .section-header p {
+      font-family: 'Amiri', serif;
+      color: var(--ink-soft);
+      font-size: 1.22rem;
+    }
+
+    .hand-divider {
+      width: 135px;
+      height: 2px;
+      border-bottom: 2px dashed #a1887f;
+      margin: 0.8rem auto 0;
+    }
+
+    /* 2. عداد الأيام بالثواني */
+    .counter-paper {
+      position: relative;
+      background: var(--paper-light);
+      border: 1.5px solid #cbb389;
+      border-radius: 14px;
+      padding: 3rem 1.5rem;
+      box-shadow: 0 15px 35px rgba(62, 39, 35, 0.12);
+      text-align: center;
+    }
+
+    .counter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(115px, 1fr));
+      gap: 1rem;
+      max-width: 800px;
+      margin: 2rem auto 1.3rem;
+    }
+
+    .stamp-box {
+      background: #f5ebd6;
+      border: 2px dashed #9e8267;
+      border-radius: 10px;
+      padding: 1.25rem 0.6rem;
+      transition: transform 0.25s ease;
+    }
+
+    .stamp-box:hover {
+      transform: translateY(-4px) rotate(1deg);
+    }
+
+    .stamp-box span.num {
+      display: block;
+      font-family: 'Amiri', serif;
+      font-size: 2.35rem;
+      font-weight: 700;
+      color: var(--wax-red);
+      line-height: 1.15;
+    }
+
+    .stamp-box span.label {
+      font-size: 0.92rem;
+      color: var(--ink-brown);
+      font-weight: 700;
+    }
+
+    .start-date-note {
+      font-family: 'Amiri', serif;
+      font-size: 1.18rem;
+      color: var(--ink-soft);
+      margin-top: 0.9rem;
+    }
+
+    /* 3. ورق ملاحظات ملزوق (Sticky Notes) */
+    .notes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.8rem;
+    }
+
+    .sticky-note {
+      position: relative;
+      padding: 2rem 1.5rem 1.7rem;
+      border-radius: 4px 4px 18px 4px;
+      box-shadow: 0 12px 26px rgba(62, 39, 35, 0.13);
+      transition: transform 0.3s ease;
+    }
+
+    .sticky-note:nth-child(1) {
+      background: #fdf3d0;
+      transform: rotate(-1.5deg);
+    }
+
+    .sticky-note:nth-child(2) {
+      background: #e9efe2;
+      transform: rotate(1.2deg);
+    }
+
+    .sticky-note:nth-child(3) {
+      background: #fae6df;
+      transform: rotate(-1deg);
+    }
+
+    .sticky-note:hover {
+      transform: rotate(0deg) translateY(-6px);
+    }
+
+    .sticky-note::before {
+      content: "📌";
+      position: absolute;
+      top: 10px;
+      left: 14px;
+      font-size: 1.1rem;
+    }
+
+    .sticky-note h3 {
+      font-family: 'Aref Ruqaa', serif;
+      font-size: 1.45rem;
+      color: var(--ink-brown);
+      margin-bottom: 0.6rem;
+    }
+
+    .sticky-note p {
+      font-family: 'Amiri', serif;
+      font-size: 1.22rem;
+      color: var(--ink-soft);
+    }
+
+    /* 4. معرض الصور الملزوق بالـ Washi Tape (21 صورة) */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(235px, 1fr));
+      gap: 2rem 1.6rem;
+    }
+
+    .scrap-photo {
+      position: relative;
+      background: #fffdf8;
+      padding: 12px 12px 20px;
+      border: 1px solid #dfd1b8;
+      box-shadow: 0 12px 28px rgba(62, 39, 35, 0.14);
+      cursor: pointer;
+      transition: transform 0.35s ease, box-shadow 0.35s ease;
+    }
+
+    .scrap-photo:nth-child(odd) {
+      transform: rotate(-1.5deg);
+    }
+
+    .scrap-photo:nth-child(even) {
+      transform: rotate(1.4deg);
+    }
+
+    .scrap-photo:hover {
+      transform: rotate(0deg) translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(62, 39, 35, 0.22);
+      z-index: 4;
+    }
+
+    .scrap-photo .tape {
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%) rotate(-3deg);
+      width: 82px;
+      height: 20px;
+      background: var(--tape-gold);
+      border-left: 1px dashed rgba(255, 255, 255, 0.5);
+      border-right: 1px dashed rgba(255, 255, 255, 0.5);
+    }
+
+    .scrap-photo:nth-child(even) .tape {
+      background: var(--tape-sage);
+      transform: translateX(-50%) rotate(3deg);
+    }
+
+    .scrap-photo img {
+      width: 100%;
+      height: 225px;
+      object-fit: cover;
+      display: block;
+      background: #f3ead8;
+      filter: sepia(8%);
+    }
+
+    .photo-info {
+      padding-top: 0.85rem;
+      text-align: center;
+    }
+
+    .photo-date {
+      font-size: 0.88rem;
+      color: var(--wax-red);
+      font-weight: 700;
+      display: block;
+      margin-bottom: 0.2rem;
+    }
+
+    .photo-caption {
+      font-family: 'Amiri', serif;
+      font-size: 1.15rem;
+      color: var(--ink-brown);
+      font-weight: 700;
+    }
+
+    /* 5. الفيديوهات في إطارات أرشيفية (7 فيديوهات) */
+    .videos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem 1.6rem;
+    }
+
+    .video-scrap {
+      position: relative;
+      background: #fffdf8;
+      padding: 1.1rem;
+      border: 1px solid #d5c4a1;
+      box-shadow: 0 12px 28px rgba(62, 39, 35, 0.14);
+      transition: transform 0.3s ease;
+    }
+
+    .video-scrap:hover {
+      transform: translateY(-5px);
+    }
+
+    .video-tag {
+      display: inline-block;
+      font-size: 0.82rem;
+      color: var(--wax-red);
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+    }
+
+    .video-scrap video {
+      width: 100%;
+      border-radius: 6px;
+      max-height: 320px;
+      background: #2b1d19;
+      display: block;
+    }
+
+    .video-title {
+      font-family: 'Amiri', serif;
+      font-size: 1.25rem;
+      padding: 0.9rem 0.4rem 0.2rem;
+      font-weight: 700;
+      color: var(--ink-brown);
+      text-align: center;
+    }
+
+    /* 6. خطاب على ورقة كراسة قديمة مسطرة */
+    .letter-wrapper {
+      max-width: 740px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .letter-envelope {
+      position: relative;
+      background: #efe2c6;
+      border: 2px dashed #a1887f;
+      border-radius: 14px;
+      padding: 2.7rem 2rem;
+      box-shadow: 0 15px 35px rgba(62, 39, 35, 0.14);
+    }
+
+    .lined-paper {
+      display: none;
+      text-align: right;
+      background-color: #fffdf7;
+      background-image: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 37px,
+        #dfd3bc 38px
+      );
+      border: 1px solid #cbb389;
+      border-radius: 8px;
+      padding: 2.4rem 2rem;
+      margin-top: 1.8rem;
+      box-shadow: 0 15px 35px rgba(62, 39, 35, 0.16);
+      font-family: 'Amiri', serif;
+      font-size: 1.4rem;
+      line-height: 38px;
+      color: var(--ink-brown);
+      animation: paperDrop 0.65s ease-out;
+    }
+
+    .lined-paper.open {
+      display: block;
+    }
+
+    .letter-sign {
+      margin-top: 1.5rem;
+      text-align: left;
+      font-family: 'Aref Ruqaa', serif;
+      font-size: 1.5rem;
+      color: var(--wax-red);
+    }
+
+    /* نافذة تكبير الصور */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(34, 21, 18, 0.88);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2500;
+      padding: 1.5rem;
+    }
+
+    .lightbox.active {
+      display: flex;
+    }
+
+    .lightbox-content {
+      max-width: 650px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      background: #fffdf8;
+      padding: 14px;
+      border: 2px solid #cbb389;
+      text-align: center;
+      position: relative;
+    }
+
+    .lightbox-content img {
+      width: 100%;
+      max-height: 60vh;
+      object-fit: contain;
+      background: #1f1411;
+    }
+
+    .lightbox-caption {
+      font-family: 'Amiri', serif;
+      font-size: 1.25rem;
+      padding: 0.9rem 1rem 0.3rem;
+      font-weight: 700;
+      color: var(--ink-brown);
+    }
+
+    .close-lightbox {
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      background: var(--wax-red);
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2.8rem 1rem 4.5rem;
+      font-family: 'Amiri', serif;
+      color: var(--ink-soft);
+      font-size: 1.15rem;
+      position: relative;
+      z-index: 2;
+    }
+  </style>
+</head>
+<body class="locked">
+
+  <!-- شريط تنقل علوي -->
+  <nav class="notebook-tabs">
+    <a href="#top">البداية</a>
+    <a href="#counter">الاعتراف</a>
+    <a href="#notes">تفاصيلك</a>
+    <a href="#gallery">لحظاتنا الحلوة</a>
+    <a href="#videos">ذكرياتنا</a>
+    <a href="#letter">رسالتي</a>
+  </nav>
+
+  <!-- زر تشغيل وإيقاف الأغنية الخاصة بيك -->
+  <button type="button" class="music-pill" id="musicBtn" onclick="toggleMusic()">
+    <span class="music-dot"></span>
+    <span id="musicLabel">♪ أغنيتنا • تشغيل</span>
+  </button>
+
+  <!-- ملف الأغنية الخاصة بيك (حطي ملف music.mp3 في نفس المجلد) -->
+  <audio id="customAudio" loop preload="auto">
+    <source src="music.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- لمسات ورقية وقلوب عائمة -->
+  <div class="floating-scraps" id="scrapsContainer"></div>
+
+  <!-- شاشة القفل على شكل ظرف مختوم بالشمع -->
+  <div class="lock-screen" id="lockScreen">
+    <form class="envelope-lock" onsubmit="checkPassword(event)" novalidate>
+      <div class="washi-tape">دفتر ذكرياتنا الخاص</div>
+      <div class="wax-seal">❤</div>
+      <h2>افتح ختم الدفتر</h2>
+      <p class="lock-hint">اكتب الرقم السري عشان تفك الختم وتفتح الدفتر<br><small>تلميح: تاريخنا المميز (يوم/شهر/سنة)</small></p>
+
+      <input
+        type="text"
+        id="passwordInput"
+        class="password-input"
+        placeholder="00/00/0000"
+        autocomplete="off"
+      />
+
+      <div class="error-msg" id="errorMsg"></div>
+
+      <button type="submit" class="btn-handmade" style="width: 100%;">افتح الدفتر ✉️</button>
+    </form>
+  </div>
+
+  <!-- 1. غلاف الدفتر -->
+  <header class="hero" id="top">
+    <div class="scrapbook-cover">
+      <div class="postage-stamp">أرشيفنا الخاص<br>17 . 07 . 2026</div>
+      <span class="badge">صُنع يدوياً بكل حب 🤎</span>
+
+      <div class="taped-photo">
+        <img src="photo2.jpeg" alt="صورتنا سوا">
+      </div>
+
+      <h1>"كل لحظة معاك تستاهل تتحفظ في دفتر لوحدها"</h1>
+      <p class="quote">
+        جمعتلك هنا حكاياتنا الصغيرة، صورنا اللي بتحكي تفاصيلنا، وضحكنا اللي بيفضل عايش مهما الأيام عدت.
+      </p>
+
+      <div class="hero-buttons">
+        <a href="#counter" class="btn-handmade">اقلب الصفحة 📖</a>
+        <button type="button" class="btn-paper-outline" onclick="scatterMemories()">انثر ذكريات 🍂🤎</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. عداد الأيام الحي بالثواني -->
+  <section id="counter" class="reveal">
+    <div class="counter-paper">
+      <div class="washi-tape"></div>
+      <div class="section-header" style="margin-bottom: 1rem;">
+        <h2>أيامنا اللي اتكتبت سوا</h2>
+        <p>من أول سطر في حكايتنا لحد اللحظة دي</p>
+        <div class="hand-divider"></div>
+      </div>
+
+      <div class="counter-grid">
+        <div class="stamp-box">
+          <span class="num" id="years">0</span>
+          <span class="label">سنة</span>
+        </div>
+        <div class="stamp-box">
+          <span class="num" id="days">0</span>
+          <span class="label">يوم</span>
+        </div>
+        <div class="stamp-box">
+          <span class="num" id="hours">0</span>
+          <span class="label">ساعة</span>
+        </div>
+        <div class="stamp-box">
+          <span class="num" id="minutes">0</span>
+          <span class="label">دقيقة</span>
+        </div>
+        <div class="stamp-box">
+          <span class="num" id="seconds">0</span>
+          <span class="label">ثانية</span>
+        </div>
+      </div>
+
+      <p class="start-date-note">✒️ تاريخ البداية: 17 يوليو 2026</p>
+    </div>
+  </section>
+
+  <!-- 3. ورق ملاحظات وتفاصيل حلوة -->
+  <section id="notes" class="reveal">
+    <div class="section-header">
+      <h2>تفاصيل صغيرة بحبها فيك</h2>
+      <p>كل حاجة فيك تتحب</p>
+      <div class="hand-divider"></div>
+    </div>
+
+    <div class="notes-grid">
+      <div class="sticky-note">
+        <h3>ضحكتنا سوا</h3>
+        <p>أبسط الكلام بيننا بيقلب ضحك من القلب وبيهون أي يوم طويل.</p>
+      </div>
+
+      <div class="sticky-note">
+        <h3>وجودك المطمن</h3>
+        <p>وتشجيعك ليا دايماً في كل خطوة، وإحساس الأمان والراحة لما نكون بنتكلم أو بنشارك تفاصيل يومنا.</p>
+      </div>
+
+      <div class="sticky-note">
+        <h3>ذكرياتنا الجاية</h3>
+        <p>لسه في صفحات كتير فاضية في الدفتر ده هنملاها سوا بأحلى مواقف.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. معرض الصور (21 صورة) -->
+  <section id="gallery" class="reveal">
+    <div class="section-header">
+      <h2>21 ذكرى سوا ولسه هنكمل</h2>
+      <p>21 صورة ملزوقة في الدفتر.. ومحفورة في القلب: دوس على أي صورة عشان تشوفها عن قرب</p>
+      <div class="hand-divider"></div>
+    </div>
+
+    <div class="gallery-grid" id="galleryGrid">
+      <div class="scrap-photo" onclick="openLightbox(this)">
+        <div class="tape"></div>
+        <img src="photo1.jpeg" alt="ذكرى رقم 1">
+        <div class="photo-info">
+          <span class="photo-date">العيد ♥️</span>
+          <p class="photo-caption">عيد القيامة كان نفسنا نتصور سوا وقبل ما أمشي خرجتلي بالتونيا علشان نتصور، انبسطت أوي وقتها علشان عرفنا نوثق اللحظة دي وكمان علشان شكلك حلو أوي بالتونيا 😊😊</p>
+        </div>
+      </div>
+
+      <div class="scrap-photo" onclick="openLightbox(this)">
+        <div class="tape"></div>
+        <img src="photo2.jpeg" alt="الماتشي ♥️">
+        <div class="photo-info">
+          <span class="photo-date">الماتشي ♥️</span>
+          <p class="photo-caption">طلبتها منك نعمل ماتشي في حاجة وأنت مرفضليش طلب وكمان عملتها حلوة أوي، حاجة من إيدك بتبقى مميزة يا جمجومي، تعيش وتعملي يا حبيبي 👑❤️</p>
+        </div>
+      </div>
+
+      <div class="scrap-photo" onclick="openLightbox(this)">
+        <div class="tape"></div>
+        <img src="photo3.jpeg" alt="ذكرى رقم 3">
+        <div class="photo-info">
+          <span class="photo-date">الخطوبة ♥️</span>
+          <p class="photo-caption">أنا كنت مبسوطة أوي إنك موجود اليوم ده وانبسطت أكتر لما فضلت عينك عليا طول الخطوبة وفي الآخر قولتلي إني أحلى واحدة في اليوم، وإنك تطلع الفون علشان أحط روج حبيتها منك 😉😂</p>
+        </div>
+      </div>
+
+      <div class="scrap-photo" onclick="openLightbox(this)">
+        <div class="tape"></div>
+        <img src="photo4.jpeg" alt="ذكرى رقم 4">
+        <div class="photo-info">
+          <span class="photo-date">عيد ميلادك ♥️</span>
+          <p class="photo-caption">أول عيد ميلاد ليك أنا اللي أخططله وكنت بفكر إزاي أبسطك، بس ده كل اللي فارق معايا. عقبال كل عيد ميلاد وإحنا سوا يا حياتي 🫂❤️</p>
+        </div>
+      </div>
+
+      <div class="scrap-photo" onclick="openLightbox(this)">
+        <div class="tape"></div>
+        <img src="photo5.jpeg" alt="ذكرى رقم 5">
+        <div class="photo-info">
+          <span class="photo-date">عيد ميلادي ♥️</span>
+          <p class="photo-caption">اليوم ده من أحلى أيامي وأحلى أعياد ميلادي علشان إنت كنت فيه وبتخططله مع تينا وجاتلي أحلى هدية منك؛ عارف اللي بحبه وجبته. شوف بقى هي مرة أنا أفاجئك ومرة إنت تفاجئني وربنا يخلينا لبعض 👸🤴</p>
+        </div>
+      </div>
+
+      <div class="scrap-photo" onclick="openLightbox(this)">
+        <div class="tape"></div>
+        <img src="photo6.jpeg" alt="ذكرى رقم 6">
+        <div class="photo-info">
+          <span class="photo-date">تجميعة جمجومي ♥️</span>
+          <p class="photo-caption">الصورة دي إنت جمعتلي فيها معظم صورنا وكنت بتحاول تفرحني بيها، وعلشان أنا عارفة إنك بتحب الصور والذكريات والرسايل ودايمًا بتحفظ التواريخ، اخترت أعملك الدفتر ده مخصوص عشانك، كل صورة وكل حرف متصمم مني ليك 🌹</p>
+        </div>
+      </div>
+
+      <div class="scrap-photo" onclick="openLightbox(this)">
+        <div class="tape"></div>
+        <img src="photo7.jpeg" alt="ذكرى رقم 7">
+        <div class="photo-info">
+          <span class="photo-date">الصورة المفضلة ♥️</span>
+          <p class="photo-caption">مش هنسى اليوم ده كنت إزاي بتقولي مش جاي وأول ما خرجت من المكتبة لقيتك في وشي واتخضيت بس انبسطت أوي أوي. الصورة المفضلة عندك وعندي علشان كده حبيت أبدأ الدفتر بيها وهي في شكل الكرتون 💖💖</p>
+        </div>
+      </div>
+
+      <div class="scrap-photo" onclick="openLightbox(this)">
+        <div class="tape"></div>
+        <img src="photo8.jpeg" alt="ذكرى رقم 8">
+        <div class="photo-info">
+          <span class="photo-date">الكريسماس 2026 ♥️</span>
+          <p class="photo-caption">السنة اللي فاتت كنا سوا واتصورنا الصورة دي بجد شكلها حلو أوي. السنة دي كمان سوا وإحنا أحسن وأقرب وده اللي كان نفسك فيه. بمناسبة الصورة دي: ميري كريسماس جمجومي (بصوت المكالمة اللي حبيتها مني) 😂🎄🎄</p>
+        </div>
+      </div>
+
+      <div class="scrap-photo" onclick="openLightbox(this)">
+        <div class="tape"></div>
+        <img src="photo9.jpeg" alt="ذكرى رقم 9">
+        <div class="photo-info">
+          <span class="photo-date">لقاء الأجيال ♥️</span>
+          <p class="photo-caption">أول لقاء أجيال أنا كنت أحضره في حياتي وإنت اللي فضلت تزن عليا علشان أحضر برغم إني كنت راجعة من الجامعة وتعبانة بس إنت صممت وأنا جيت عشانك، وجبنا سندوتشات سوري الحمد لله وحشة أوي 😂😂😂 فشكراً يا جمجومي على وجودك في حياتي وإنك دايمًا معايا وبتشجعني 🫂♥️</p>
+        </div>
+      </div>
+
+      <div class="scrap-photo" onclick="openLightbox(this)">
+        <div class="tape"></div>
+        <img src="photo10.jpeg" alt="ذكرى رقم 10">
+        <div class="photo-info">
+          <span class="photo-date">قداس الخدمة الأول ♥️</span>
+          <p class="photo-caption">الصورة دي كل ما بشوفها حرفيًا بفتكر كلامك وإنت بتقولي في الإكليل بيقفوا كده بالشرايط دي ولما بعتها في الشات كتبت نفس الجملة برضو كأنه إكليل بتاعنا، ورجعت بعد كده اختفيت من حياتك وإنت في الجيش وسماح يا باشا كفاية تذلني بفترة الجيش. دلوقتي أحلى وأحسن في كل حاجة ربنا مرتبهالنا، ربنا يخليك ليا يا حياتي 😍💖</p>
+        </div>
+      </div>
+
+      <div class="scrap-photo" onclick="openLightbox(this)">
+        <div class="tape"></div>
+        <img src="photo11.jpeg" alt="ذكرى رقم 11">
+        <div class="photo-info">
+          <span class="photo-date">ابتكارات ♥️</span>
+          <p class="photo-caption">أنا عارفة إنك داخل الأنشطة علشان تبقى جنبي بس عايزة أقولك إنك برضو كنت بتخدم فيها بكل حب وده كان باين عليك بجد. أحلى حاجة لما كنت ببصلك ألاقيك باصصلي في وسط النشاط كنت بطمن أوي علشان إنت موجود، والنشاط ده بالذات كان كله إبداعات واللوجو اللي اتصورنا بيه ده في قلبي 👩‍❤️‍👨</p>
+        </div>
+      </div>
+
+      <div class="scrap-photo" onclick="openLightbox(this)">
+        <div class="tape"></div>
+        <img src="photo12.jpeg" alt="ذكرى رقم 12">
+        <div class="photo-info">
+          <span class="photo-date">العيد الصغير ♥️</span>
+          <p class="photo-caption">اممم اليوم ده يوم عيد الميلاد بس حضرتك قررت تخرج مع صحابك ومجتش معانا، أنا مكنتش مبسوطة خالص بالخرجة دي وكنت عايزاك تبقى موجود، بس ملحوقه العيد ده حضرتك هتخرج معايا كده كده 😉😊</p>
+        </div>
+      </div>
+
+      <div class="scrap-photo" onclick="openLightbox(this)">
+        <div class="tape"></div>
+        <img src="photo13.jpeg" alt="ذكرى رقم 13">
+        <div class="photo-info">
+          <span class="photo-date">الكوربة ♥️</span>
+          <p class="photo-caption">اليوم ده أنا كنت نازلة قبل الكريسماس بكام يوم بس كنت زعلانة أوي وقبل ما إنت تيجي كنت معيطة جامد حتى تينا وقتها كلمتك تسألك عن السبب وإنت متعرفش، وسألتك هتيجي ولا لأ فضلت تقولي لأ بس جيت وعملتها مفاجأة، ودي كانت أول خرجة لينا سوا وكمان بره شبرا 🤩🤩</p>
+        </div>
+      </div>
+
+      <div class="scrap-photo" onclick="openLightbox(this)">
+        <div class="tape"></div>
+        <img src="photo14.jpeg" alt="ذكرى رقم 14">
+        <div class="photo-info">
+          <span class="photo-date">رأس السنة 2026 ♥️</span>
+          <p class="photo-caption">دي بقى كانت في اجتماعنا وخدمنا أسرة العدرا، معرفش ليه ببص للصورة دي بحس إننا شبه بعض فيها تفتكر فينا خدود من بعض 😂😂 فاضل شهر ونبدأ سنة جديدة سوا ونتصور تاني برضو ونوثق اللحظات دي وأرجع أضيفها هنا في الدفتر بتاعنا ♥️♥️</p>
+        </div>
+      </div>
+
+      <div class="scrap-photo" onclick="openLightbox(this)">
+        <div class="tape"></div>
+        <img src="photo15.jpeg" alt="ذكرى رقم 15">
+        <div class="photo-info">
+          <span class="photo-date">عيد القيامة ♥️</span>
+          <p class="photo-caption">إزاي يا فندم تتخانق معايا اليوم ده علشان متصورناش سوا وإحنا واخدين صورة سكر أهي، ده إنت الوحيد اللي متصورة معاك سيلفي في العيد وشكلها تحفة بقى. العيد ده هنتصور كتير سوا يا حياتي وإنت أول واحد هتصور معاه كمان، كل عيد وإنت عيدي ♥️🫂</p>
+        </div>
+      </div>
+
+      <div class="scrap-photo" onclick="openLightbox(this)">
+        <div class="tape"></div>
+        <img src="photo16.jpeg" alt="ذكرى رقم 16">
+        <div class="photo-info">
+          <span class="photo-date">الزمالك ♥️</span>
+          <p class="photo-caption">عيد ميلاد تينا كانوا بيشدوا في شعر بعض وإحنا مبسوطين وبنتصور وسبناهم ووقفنا قدام النيل نرغي ونضحك. يا بختنا ببعض والله، ناس رايقة ولا بنقف لبعض على واحدة، ومجرد ما نتخانق بنتصالح على طول. ياريت نفضل كدا دايماً ونتعلم من كل خناقة ونعرف إيه بيزعل التاني ونبطل نعمله ممكن؟؟ 🌚🌚</p>
+        </div>
+      </div>
+
+      <div class="scrap-photo" onclick="openLightbox(this)">
+        <div class="tape"></div>
+        <img src="photo17.jpeg" alt="ذكرى رقم 17">
+        <div class="photo-info">
+          <span class="photo-date">قداس الخدمة الثاني ♥️</span>
+          <p class="photo-caption">كان نفسي نفضل بنخدم سوا بس اللي ربنا عايزه؛ عايزة أقولك حاجة إن مهما ربنا حطك في مكان فهو خير ليك وإنت بتخدم فيه وحتى لو ده مش باين للناس بس قدام ربنا كبير، فخليك عارف إنك أشطر مستر أنا شوفته وإن شاء الله في سنة نخدم تاني سوا 😍😍</p>
+        </div>
+      </div>
+
+      <div class="scrap-photo" onclick="openLightbox(this)">
+        <div class="tape"></div>
+        <img src="photo18.jpeg" alt="ذكرى رقم 18">
+        <div class="photo-info">
+          <span class="photo-date">يوم العياط العالمي ♥️</span>
+          <p class="photo-caption">إنت بتحب اليوم ده أوي 😂😂 بتحسه اليوم اللي قربنا فيه من البداية حتى لو أنا اختفيت بس رجعنا وقربنا تاني. هنفضل نفتكر شهر 10 بقعدة الجيوشي وبكمية العياط اللي عيطته ليك وإنت تفضل تقولي شكلك حلو وإنتي بتعيطي 😂♥️ وبعدها صممت إننا نتصور علشان لو ذاكرتنا نسيت دي هتبقى المفكرة بتاعتنا، وعلشان كده عملت الدفتر ده هحفظ فيه كل تفاصيلنا الحلوة ♥️🫂</p>
+        </div>
+      </div>
+
+      <div class="scrap-photo" onclick="openLightbox(this)">
+        <div class="tape"></div>
+        <img src="photo19.jpeg" alt="ذكرى رقم 19">
+        <div class="photo-info">
+          <span class="photo-date">المكتبة ♥️</span>
+          <p class="photo-caption">يومنا الأول المميز 20/4/2026؛ شوفت إزاي كنت مبسوطة بالمكتبة وده بسببك وإنك وديتني، كان نفسي جداً أروحها شكراً إنك وديتني. مش هنسى وقتها فرحتي وأنا بمسكك وعمالة أجرك معايا علشان ألحق أشوف كل حاجة، وإزاي كنت فاكر أسماء الكتب اللي عجبتني وقولتها باسم المؤلف كمان؛ حقيقي انبهرت بيك، إنت كنت ومازلت سبب فرحتي 💖💖</p>
+        </div>
+      </div>
+
+      <div class="scrap-photo" onclick="openLightbox(this)">
+        <div class="tape"></div>
+        <img src="photo20.jpeg" alt="ذكرى رقم 20">
+        <div class="photo-info">
+          <span class="photo-date">الورد ♥️</span>
+          <p class="photo-caption">كنا في الجمعة العظيمة وإنت أول ما عرفت إني بحب الورد الأحمر النبيتي جبتلي على طول منه، وطبعاً أول مرة تجيب ورد وجبته في كيس أسود 😂😂 ياريت نزود من الورد بعد كده بس من غير كيس أسود بليز 😂😂🌹🌹 شكراً إنك مهتم بتفاصيلي وبتعرف اللي بحبه وبتعمله عشاني ♥️🫂</p>
+        </div>
+      </div>
+
+      <div class="scrap-photo" onclick="openLightbox(this)">
+        <div class="tape"></div>
+        <img src="photo21.jpeg" alt="ذكرى رقم 21">
+        <div class="photo-info">
+          <span class="photo-date">الشتاء ♥️</span>
+          <p class="photo-caption">لو فاكر اليوم ده كنا قاعدين سوا في برجولة والدنيا مطرت علينا وإحنا نزلنا في الجو التحفة ده وإنت قولتلي نتصور برضو. عندك حق إننا نتصور في لحظة زي دي، بجد جو تحفة ووقت جميل، ياريت يتكرر تاني ونتمشى تحت المطر سوا 💖💖</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. الفيديوهات المبهجة (7 فيديوهات) -->
+  <section id="videos" class="reveal">
+    <div class="section-header">
+      <h2>أرشيف الـ 7 فيديوهات</h2>
+      <p>7 لقطات حية بتحفظ ضحكنا وأجمل أيامنا سوا</p>
+      <div class="hand-divider"></div>
+    </div>
+
+    <div class="videos-grid">
+      <div class="video-scrap">
+        <span class="video-tag">🎞️ فيديو #01</span>
+        <video controls preload="metadata">
+          <source src="video1.mp4" type="video/mp4">
+          متصفحك لا يدعم تشغيل الفيديو.
+        </video>
+        <p class="video-title">يارب كل قداس نكون سوا كده ♥️🫂🤎</p>
+      </div>
+
+      <div class="video-scrap">
+        <span class="video-tag">🎞️ فيديو #02</span>
+        <video controls preload="metadata">
+          <source src="video2.mp4" type="video/mp4">
+          متصفحك لا يدعم تشغيل الفيديو.
+        </video>
+        <p class="video-title">13/4/2026 Happy Birthday jmjomyyyy♥️🫂 </p>
+      </div>
+
+      <div class="video-scrap">
+        <span class="video-tag">🎞️ فيديو #03</span>
+        <video controls preload="metadata">
+          <source src="video3.mp4" type="video/mp4">
+          متصفحك لا يدعم تشغيل الفيديو.
+        </video>
+        <p class="video-title">قداس تاني برضوا سوا 😂♥️♥️</p>
+      </div>
+
+      <div class="video-scrap">
+        <span class="video-tag">🎞️ فيديو #04</span>
+        <video controls preload="metadata">
+          <source src="video4.mp4" type="video/mp4">
+          متصفحك لا يدعم تشغيل الفيديو.
+        </video>
+        <p class="video-title">احلي حاجه في الفيديو لما بتقولي مسبناش بعض 😂😂♥️</p>
+      </div>
+
+      <div class="video-scrap">
+        <span class="video-tag">🎞️ فيديو #05</span>
+        <video controls preload="metadata">
+          <source src="video5.mp4" type="video/mp4">
+          متصفحك لا يدعم تشغيل الفيديو.
+        </video>
+        <p class="video-title">احلي و اجمل اغنسطس 😍♥️</p>
+      </div>
+
+      <div class="video-scrap">
+        <span class="video-tag">🎞️ فيديو #06</span>
+        <video controls preload="metadata">
+          <source src="video6.mp4" type="video/mp4">
+          متصفحك لا يدعم تشغيل الفيديو.
+        </video>
+        <p class="video-title">الدنيا بتمطر واحنا بنتصور 😂😂♥️</p>
+      </div>
+
+      <div class="video-scrap">
+        <span class="video-tag">🎞️ فيديو #07</span>
+        <video controls preload="metadata">
+          <source src="video7.mp4" type="video/mp4">
+          متصفحك لا يدعم تشغيل الفيديو.
+        </video>
+        <p class="video-title"> احلي جو و بتمطر برضوا وانا بغفلك 😂😂♥️</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. الخطاب في الآخر -->
+  <section id="letter" class="reveal">
+    <div class="section-header">
+      <h2>جواب مكتوب ليك</h2>
+      <p>ورقة أخيرة في آخر الدفتر</p>
+      <div class="hand-divider"></div>
+    </div>
+
+    <div class="letter-wrapper">
+      <div class="letter-envelope">
+        <div class="washi-tape"></div>
+        <p style="font-family: 'Amiri', serif; font-size: 1.35rem; color: var(--ink-brown); margin-bottom: 1.2rem; font-weight: 700;">
+          ✉️ في جواب مطوي مستنيك هنا..
+        </p>
+        <button type="button" class="btn-handmade" onclick="toggleLetter()" id="letterBtn">افتح الجواب ✒️</button>
+
+        <div class="lined-paper" id="letterSheet">
+          <p>جمجومي ♥️♥️،</p>
+          <p>
+            الحاجات اللي بتتعمل بالإيد وبهدوء دايماً بتعيش، وده بالظبط إحساسي ناحيتك. حبيت اعملك حاجه مختلفه و تكون لينا احنا بس معموله مخصوص عشانك كل كود برمجه و كل حاجه اتكتبت ليك بالأخص 
+علشان عارفه انك بتحب الصور و رسايل و ذكريات 
+قولت ليه معملش حاجه تجمع كل ده في مكان واحد و لا عمرها تقدم ولا تبوظ حبيت أجمع ذكرياتنا في مكان يشبه الدفا والبساطة اللي بلاقيهم معاك في كل مرة بنتكلم أو بنتقابل فيها.
+          </p>
+          <p>
+            شكراً إنك جزء أساسي من أيامي، ويا رب نفضل نملى الدفتر ده صور وضحك وذكريات حلوة طول العمر.
+          </p>
+          <div class="letter-sign">بنت قلبكً 🤎</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    مكتوب ومُجمع بكل حب مخصوص علشانك ✒️🤎
+  </footer>
+
+  <!-- نافذة تكبير الصورة -->
+  <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+    <div class="lightbox-content">
+      <button type="button" class="close-lightbox" onclick="closeLightbox(event)">×</button>
+      <img id="lightboxImg" src="" alt="">
+      <p class="lightbox-caption" id="lightboxCaption"></p>
+    </div>
+  </div>
+
+  <script>
+    // 1. الباسورد (17/7/2026)
+    const acceptedPasswords = [
+      "17/7/2026",
+      "17/07/2026",
+      "17-7-2026",
+      "17-07-2026",
+      "2026-07-17"
+    ];
+
+    function unlockPage() {
+      document.getElementById("lockScreen").classList.add("unlocked");
+      document.body.classList.remove("locked");
+      sessionStorage.setItem("vintageGiftUnlocked", "true");
+    }
+
+    if (sessionStorage.getItem("vintageGiftUnlocked") === "true") {
+      unlockPage();
+    }
+
+    function checkPassword(e) {
+      e.preventDefault();
+      const inputEl = document.getElementById("passwordInput");
+      const errorEl = document.getElementById("errorMsg");
+      const cardEl = document.querySelector(".envelope-lock");
+      const entered = inputEl.value.trim();
+
+      if (acceptedPasswords.includes(entered)) {
+        errorEl.textContent = "";
+        unlockPage();
+        scatterMemories();
+      } else {
+        errorEl.textContent = "الرقم السري مش مظبوط.. جرّب تاني ✒️";
+        cardEl.classList.remove("shake");
+        void cardEl.offsetWidth;
+        cardEl.classList.add("shake");
+      }
+    }
+
+    // 2. عداد الأيام الحي بالثواني
+    const startDate = new Date("2026-07-17T00:00:00");
+
+    function updateCounter() {
+      const now = new Date();
+      const diff = Math.max(0, now - startDate);
+
+      const totalDays = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const years = Math.floor(totalDays / 365);
+      const remainingDays = totalDays % 365;
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      document.getElementById("years").textContent = years;
+      document.getElementById("days").textContent = remainingDays;
+      document.getElementById("hours").textContent = String(hours).padStart(2, "0");
+      document.getElementById("minutes").textContent = String(minutes).padStart(2, "0");
+      document.getElementById("seconds").textContent = String(seconds).padStart(2, "0");
+    }
+    updateCounter();
+    setInterval(updateCounter, 1000);
+
+    // 3. فتح وقفل الجواب
+    function toggleLetter() {
+      const sheet = document.getElementById("letterSheet");
+      const btn = document.getElementById("letterBtn");
+      sheet.classList.toggle("open");
+      btn.textContent = sheet.classList.contains("open") ? "اطوي الجواب ✉️" : "افتح الجواب ✒️";
+    }
+
+    // 4. تكبير الصور
+    function openLightbox(card) {
+      const img = card.querySelector("img").src;
+      const caption = card.querySelector(".photo-caption").textContent;
+      document.getElementById("lightboxImg").src = img;
+      document.getElementById("lightboxCaption").textContent = caption;
+      document.getElementById("lightbox").classList.add("active");
+    }
+
+    function closeLightbox(e) {
+      if (e.target.id === "lightbox" || e.target.classList.contains("close-lightbox")) {
+        document.getElementById("lightbox").classList.remove("active");
+      }
+    }
+
+    // 5. تشغيل وإيقاف الأغنية الخاصة بيك
+    const customAudio = document.getElementById("customAudio");
+    const musicBtn = document.getElementById("musicBtn");
+    const musicLabel = document.getElementById("musicLabel");
+
+    function toggleMusic() {
+      if (customAudio.paused) {
+        customAudio.play().then(() => {
+          musicBtn.classList.add("playing");
+          musicLabel.textContent = "♪ أغنيتنا • إيقاف";
+        }).catch(() => {
+          musicLabel.textContent = "♪ ضع ملف music.mp3 في المجلد";
+        });
+      } else {
+        customAudio.pause();
+        musicBtn.classList.remove("playing");
+        musicLabel.textContent = "♪ أغنيتنا • تشغيل";
+      }
+    }
+
+    customAudio.addEventListener("play", () => {
+      musicBtn.classList.add("playing");
+      musicLabel.textContent = "♪ أغنيتنا • إيقاف";
+    });
+
+    customAudio.addEventListener("pause", () => {
+      musicBtn.classList.remove("playing");
+      musicLabel.textContent = "♪ أغنيتنا • تشغيل";
+    });
+
+    // 6. لمسات عائمة ونثر الذكريات
+    const scrapsContainer = document.getElementById("scrapsContainer");
+    const icons = ["🍂", "🤎", "✦", "📜", "❤️"];
+
+    function spawnScrap(icon, leftPos) {
+      const span = document.createElement("span");
+      span.className = "scrap-item";
+      span.textContent = icon;
+      span.style.left = (leftPos !== undefined ? leftPos : Math.random() * 96) + "vw";
+      span.style.fontSize = (Math.random() * 12 + 13) + "px";
+      span.style.animationDuration = (Math.random() * 7 + 9) + "s";
+      scrapsContainer.appendChild(span);
+      setTimeout(() => span.remove(), 17000);
+    }
+
+    for (let i = 0; i < 14; i++) {
+      setTimeout(() => spawnScrap(icons[i % icons.length]), i * 500);
+    }
+    setInterval(() => spawnScrap(icons[Math.floor(Math.random() * icons.length)]), 2500);
+
+    function scatterMemories() {
+      for (let i = 0; i < 16; i++) {
+        setTimeout(() => {
+          spawnScrap(icons[i % icons.length], Math.random() * 96);
+        }, i * 80);
+      }
+    }
+
+    // 7. حركة ظهور الأقسام تدريجياً
+    const revealEls = document.querySelectorAll(".reveal");
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+        }
+      });
+    }, { threshold: 0.14 });
+
+    revealEls.forEach(el => observer.observe(el));
+
+    // 8. معالجة ذكية لامتدادات الصور في حال اختلف الامتداد (jpeg / jpg / png)
+    const fallbackExts = [".jpg", ".JPG", ".JPEG", ".png", ".PNG"];
+    document.querySelectorAll("img").forEach((img) => {
+      let attempt = 0;
+      const originalSrc = img.getAttribute("src");
+      if (!originalSrc) return;
+      const baseName = originalSrc.replace(/\.[^/.]+$/, "");
+
+      img.addEventListener("error", function () {
+        if (attempt < fallbackExts.length) {
+          img.src = baseName + fallbackExts[attempt++];
+        }
+      });
+    });
+  </script>
+</body>
+</html>
